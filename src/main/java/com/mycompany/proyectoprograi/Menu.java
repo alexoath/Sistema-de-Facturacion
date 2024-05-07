@@ -340,7 +340,6 @@ private void mostrarFacturasEnTabla() {
         JtNombreFactura = new javax.swing.JTextField();
         JtDireccionFactura = new javax.swing.JTextField();
         jButton27 = new javax.swing.JButton();
-        jButton28 = new javax.swing.JButton();
         JtCantidadProducto = new javax.swing.JTextField();
         JtNombreProducto = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
@@ -351,6 +350,8 @@ private void mostrarFacturasEnTabla() {
         jLabel27 = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
         JtableFacturas = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jButton28 = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
@@ -925,17 +926,10 @@ private void mostrarFacturasEnTabla() {
             }
         });
 
-        jButton27.setText("Facturar");
+        jButton27.setText("Preparar");
         jButton27.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton27ActionPerformed(evt);
-            }
-        });
-
-        jButton28.setText("Anular Factura");
-        jButton28.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton28ActionPerformed(evt);
             }
         });
 
@@ -1016,11 +1010,8 @@ private void mostrarFacturasEnTabla() {
                         .addGap(179, 179, 179))
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(jButton27)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton28))
-                            .addComponent(jLabel24))
+                            .addComponent(jLabel24)
+                            .addComponent(jButton27))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel11Layout.setVerticalGroup(
@@ -1052,11 +1043,9 @@ private void mostrarFacturasEnTabla() {
                             .addComponent(JtNombreProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(JtTotalProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(JtPrecioProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(180, 180, 180)))
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton28)
-                    .addComponent(jButton27))
-                .addGap(23, 23, 23))
+                        .addGap(187, 187, 187)))
+                .addComponent(jButton27)
+                .addGap(16, 16, 16))
         );
 
         JtableFacturas.setModel(new javax.swing.table.DefaultTableModel(
@@ -1072,14 +1061,34 @@ private void mostrarFacturasEnTabla() {
         ));
         jScrollPane6.setViewportView(JtableFacturas);
 
+        jButton1.setText("Guardar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton28.setText("Anular Factura");
+        jButton28.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton28ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane6)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(124, 124, 124)
+                .addComponent(jButton1)
+                .addGap(37, 37, 37)
+                .addComponent(jButton28)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel6Layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -1091,7 +1100,11 @@ private void mostrarFacturasEnTabla() {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap(116, Short.MAX_VALUE)
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(61, 61, 61))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1)
+                    .addComponent(jButton28))
+                .addGap(26, 26, 26))
             .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel6Layout.createSequentialGroup()
                     .addGap(0, 11, Short.MAX_VALUE)
@@ -2540,47 +2553,7 @@ if (!existeCliente(nitCliente)) {
         }
     }
 
-try {
-    File file = new File("Facturas.bin");
-    if (!file.exists()) {
-        file.createNewFile();
-    }
-    FileOutputStream archivo = new FileOutputStream(file, true); // true para modo de apertura para agregar al final
-    DataOutputStream escritura = new DataOutputStream(archivo);
 
-    Factura factura = new Factura();
-    factura.setNit(JtNitFactura.getText());
-    factura.setNombre(JtNombreFactura.getText());
-    factura.setDireccion(JtDireccionFactura.getText());
-    factura.setProducto(JtNombreProducto.getText());
-    factura.setCantidad(Integer.parseInt(JtCantidadProducto.getText()));
-    factura.setPrecio(Float.parseFloat(JtPrecioProducto.getText()));
-    factura.setTotal(Float.parseFloat(JtTotalProducto.getText()));
-
-    escritura.writeUTF(factura.getNit());
-    escritura.writeUTF(factura.getNombre());
-    escritura.writeUTF(factura.getDireccion());
-    escritura.writeUTF(factura.getProducto());
-    escritura.writeInt(factura.getCantidad());
-    escritura.writeFloat(factura.getPrecio());
-    escritura.writeFloat(factura.getTotal());
-
-    escritura.close(); // Asegura que todos los datos se escriban en el archivo
-
-    System.out.println("Se guardó la siguiente factura:");
-    System.out.println("NIT: " + factura.getNit());
-    System.out.println("Nombre: " + factura.getNombre());
-    System.out.println("Dirección: " + factura.getDireccion());
-    System.out.println("Producto: " + factura.getProducto());
-    System.out.println("Cantidad: " + factura.getCantidad());
-    System.out.println("Precio: " + factura.getPrecio());
-    System.out.println("Total: " + factura.getTotal());
-
-    JOptionPane.showMessageDialog(this, "Agregado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-} catch (IOException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error al guardar la factura", "Error", JOptionPane.ERROR_MESSAGE);
-}
 }
     }//GEN-LAST:event_jButton27ActionPerformed
 
@@ -2678,6 +2651,43 @@ try {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton28ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+try {
+    File file = new File("Facturas.bin");
+    if (!file.exists()) {
+        file.createNewFile();
+    }
+    FileOutputStream archivo = new FileOutputStream(file, true); // true para modo de apertura para agregar al final
+    DataOutputStream escritura = new DataOutputStream(archivo);
+
+    Factura factura = new Factura();
+    factura.setNit(JtNitFactura.getText());
+    factura.setNombre(JtNombreFactura.getText());
+    factura.setDireccion(JtDireccionFactura.getText());
+    factura.setProducto(JtNombreProducto.getText());
+    factura.setCantidad(Integer.parseInt(JtCantidadProducto.getText()));
+    factura.setPrecio(Float.parseFloat(JtPrecioProducto.getText()));
+    factura.setTotal(Float.parseFloat(JtTotalProducto.getText()));
+
+    escritura.writeUTF(factura.getNit());
+    escritura.writeUTF(factura.getNombre());
+    escritura.writeUTF(factura.getDireccion());
+    escritura.writeUTF(factura.getProducto());
+    escritura.writeInt(factura.getCantidad());
+    escritura.writeFloat(factura.getPrecio());
+    escritura.writeFloat(factura.getTotal());
+
+    escritura.close(); // Asegura que todos los datos se escriban en el archivo
+
+    mostrarFacturasEnTabla();
+
+    JOptionPane.showMessageDialog(this, "Agregado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+} catch (IOException ex) {
+    ex.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Error al guardar la factura", "Error", JOptionPane.ERROR_MESSAGE);
+}
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2764,6 +2774,7 @@ try {
     private javax.swing.JTextField TfNitProveedor;
     private javax.swing.JTextField TfNombreProveedor;
     private javax.swing.JTextField TfTelefonoProveedor;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
