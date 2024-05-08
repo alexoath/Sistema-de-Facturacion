@@ -12,9 +12,16 @@ import java.io.Serializable;
  */
 public class Factura implements Serializable{
 
-    public Factura(String nit, String nombre, String direccion, String producto, int cantidad, float precio, float total) {
+
+    private String NoFactura;
+
+    public String getNoFactura() {
+        return NoFactura;
     }
-    
+
+    public void setNoFactura(String NoFactura) {
+        this.NoFactura = NoFactura;
+    }
     private String Nit;
     private String Nombre;
     private String Direccion;
@@ -22,10 +29,21 @@ public class Factura implements Serializable{
     private Integer Cantidad;
     private Float Precio;
     private Float Total;
+    
+    public Factura(String noFactura, String nit, String nombre, String direccion, String producto, int cantidad, float precio, float total) {
+    this.NoFactura = noFactura;
+    this.Nit = nit;
+    this.Nombre = nombre;
+    this.Direccion = direccion;
+    this.Producto = producto;
+    this.Cantidad = cantidad;
+    this.Precio = precio;
+    this.Total = total;
 
-    Factura() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+}
+public Factura() {
+    // No hace nada
+}    
 
     public String getProducto() {
         return Producto;

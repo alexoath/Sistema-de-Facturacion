@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -227,6 +228,7 @@ private void mostrarFacturasEnTabla() {
         ArrayList<Factura> facturas = new ArrayList<>();
         try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
             while (entrada.available() > 0) {
+                String noFactura = entrada.readUTF();
                 String nit = entrada.readUTF();
                 String nombre = entrada.readUTF();
                 String direccion = entrada.readUTF();
@@ -235,12 +237,13 @@ private void mostrarFacturasEnTabla() {
                 float precio = entrada.readFloat();
                 float total = entrada.readFloat();
 
-                facturas.add(new Factura(nit, nombre, direccion, producto, cantidad, precio, total));
+                facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total));
             }
         }
 
         // Crear un modelo para la tabla
         DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("No. Factura");
         model.addColumn("NIT");
         model.addColumn("Nombre");
         model.addColumn("Dirección");
@@ -251,7 +254,7 @@ private void mostrarFacturasEnTabla() {
 
         // Agregar las facturas al modelo
         for (Factura factura : facturas) {
-            Object[] fila = {factura.getNit(), factura.getNombre(), factura.getDireccion(), factura.getProducto(), factura.getCantidad(), factura.getPrecio(), factura.getTotal()};
+            Object[] fila = {factura.getNoFactura(), factura.getNit(), factura.getNombre(), factura.getDireccion(), factura.getProducto(), factura.getCantidad(), factura.getPrecio(), factura.getTotal()};
             model.addRow(fila);
         }
 
@@ -352,6 +355,8 @@ private void mostrarFacturasEnTabla() {
         JtableFacturas = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton28 = new javax.swing.JButton();
+        JtNoFactura = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
@@ -1011,7 +1016,9 @@ private void mostrarFacturasEnTabla() {
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel24)
-                            .addComponent(jButton27))
+                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addComponent(jButton27)))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel11Layout.setVerticalGroup(
@@ -1043,20 +1050,20 @@ private void mostrarFacturasEnTabla() {
                             .addComponent(JtNombreProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(JtTotalProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(JtPrecioProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(187, 187, 187)))
+                        .addGap(189, 189, 189)))
                 .addComponent(jButton27)
-                .addGap(16, 16, 16))
+                .addGap(14, 14, 14))
         );
 
         JtableFacturas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Nit", "Nombre", "Producto", "Precio U.", "Total"
+                "No. Factura", "Nit", "Nombre", "Producto", "Precio U.", "Total"
             }
         ));
         jScrollPane6.setViewportView(JtableFacturas);
@@ -1075,20 +1082,30 @@ private void mostrarFacturasEnTabla() {
             }
         });
 
+        jLabel28.setText("No. Factura");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(124, 124, 124)
+                .addGap(131, 131, 131)
                 .addComponent(jButton1)
-                .addGap(37, 37, 37)
+                .addGap(30, 30, 30)
                 .addComponent(jButton28)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                                .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(57, 57, 57))
+                            .addComponent(JtNoFactura, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
             .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel6Layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -1098,12 +1115,15 @@ private void mostrarFacturasEnTabla() {
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(116, Short.MAX_VALUE)
+                .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(JtNoFactura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
-                    .addComponent(jButton28))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton28)
+                    .addComponent(jButton1))
                 .addGap(26, 26, 26))
             .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel6Layout.createSequentialGroup()
@@ -2534,6 +2554,12 @@ if (!existeCliente(nitCliente)) {
                     double precioProducto = Double.parseDouble(precio);
                     double total = cantidadIngresada * precioProducto;
                     JtTotalProducto.setText(String.valueOf(total));
+                    
+                    // Generar un nuevo UUID
+        UUID newUuid = UUID.randomUUID();
+
+        // Supongamos que JtNoFactura es un JTextField
+        JtNoFactura.setText(newUuid.toString());
 
                     entradaArticulos.close();
                     return;
@@ -2648,7 +2674,65 @@ if (!existeCliente(nitCliente)) {
     }//GEN-LAST:event_JtTotalProductoActionPerformed
 
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
-        // TODO add your handling code here:
+try {
+    // Leer todas las facturas
+    ArrayList<Factura> facturas = new ArrayList<>();
+    try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
+        while (entrada.available() > 0) {
+            String noFactura = entrada.readUTF();
+            String nit = entrada.readUTF();
+            String nombre = entrada.readUTF();
+            String direccion = entrada.readUTF();
+            String producto = entrada.readUTF();
+            int cantidad = entrada.readInt();
+            float precio = entrada.readFloat();
+            float total = entrada.readFloat();
+
+            facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total));
+        }
+    }
+
+    // Buscar la factura a anular
+    String noFacturaAnular = JtNoFactura.getText();
+    Factura facturaAnular = null;
+    for (Factura factura : facturas) {
+        if (factura.getNoFactura().equals(noFacturaAnular)) {
+            facturaAnular = factura;
+            break;
+        }
+    }
+
+    if (facturaAnular != null) {
+        // Anular la factura
+        facturas.remove(facturaAnular);
+
+        // Reescribir todas las facturas en el archivo
+        try (DataOutputStream salida = new DataOutputStream(new FileOutputStream("Facturas.bin"))) {
+            for (Factura factura : facturas) {
+                salida.writeUTF(factura.getNoFactura());
+                salida.writeUTF(factura.getNit());
+                salida.writeUTF(factura.getNombre());
+                salida.writeUTF(factura.getDireccion());
+                salida.writeUTF(factura.getProducto());
+                salida.writeInt(factura.getCantidad());
+                salida.writeFloat(factura.getPrecio());
+                salida.writeFloat(factura.getTotal());
+            }
+        }
+
+        mostrarFacturasEnTabla();
+        
+        JtNoFactura.setText("");
+
+        JOptionPane.showMessageDialog(this, "Factura anulada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(this, "No se encontró la factura", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+} catch (IOException ex) {
+    ex.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Error al anular la factura", "Error", JOptionPane.ERROR_MESSAGE);
+}
+        
     }//GEN-LAST:event_jButton28ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -2661,6 +2745,7 @@ try {
     DataOutputStream escritura = new DataOutputStream(archivo);
 
     Factura factura = new Factura();
+    factura.setNoFactura(JtNoFactura.getText());
     factura.setNit(JtNitFactura.getText());
     factura.setNombre(JtNombreFactura.getText());
     factura.setDireccion(JtDireccionFactura.getText());
@@ -2669,6 +2754,7 @@ try {
     factura.setPrecio(Float.parseFloat(JtPrecioProducto.getText()));
     factura.setTotal(Float.parseFloat(JtTotalProducto.getText()));
 
+    escritura.writeUTF(factura.getNoFactura());
     escritura.writeUTF(factura.getNit());
     escritura.writeUTF(factura.getNombre());
     escritura.writeUTF(factura.getDireccion());
@@ -2751,6 +2837,7 @@ try {
     private javax.swing.JButton JtEmpleados;
     private javax.swing.JTextField JtNitCliente;
     private javax.swing.JTextField JtNitFactura;
+    private javax.swing.JTextField JtNoFactura;
     private javax.swing.JTextField JtNombreArticulo;
     private javax.swing.JTextField JtNombreCliente;
     private javax.swing.JTextField JtNombreEmpleado;
@@ -2806,6 +2893,7 @@ try {
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
