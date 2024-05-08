@@ -22,8 +22,8 @@ import javax.swing.table.DefaultTableModel;
  */
 
 public class Menu extends javax.swing.JFrame {
-
     
+     
     
     
     public Menu() {
@@ -236,8 +236,9 @@ private void mostrarFacturasEnTabla() {
                 int cantidad = entrada.readInt();
                 float precio = entrada.readFloat();
                 float total = entrada.readFloat();
+                String usuario = entrada.readUTF(); // Leer el usuario
 
-                facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total));
+                facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario)); // Agregar el usuario a la factura
             }
         }
 
@@ -251,10 +252,11 @@ private void mostrarFacturasEnTabla() {
         model.addColumn("Cantidad");
         model.addColumn("Precio");
         model.addColumn("Total");
+        model.addColumn("Usuario"); // Agregar una columna de "Usuario"
 
         // Agregar las facturas al modelo
         for (Factura factura : facturas) {
-            Object[] fila = {factura.getNoFactura(), factura.getNit(), factura.getNombre(), factura.getDireccion(), factura.getProducto(), factura.getCantidad(), factura.getPrecio(), factura.getTotal()};
+            Object[] fila = {factura.getNoFactura(), factura.getNit(), factura.getNombre(), factura.getDireccion(), factura.getProducto(), factura.getCantidad(), factura.getPrecio(), factura.getTotal(), factura.getUsuario()}; // Agregar el usuario a la fila
             model.addRow(fila);
         }
 
@@ -1057,13 +1059,13 @@ private void mostrarFacturasEnTabla() {
 
         JtableFacturas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "No. Factura", "Nit", "Nombre", "Producto", "Precio U.", "Total"
+                "No. Factura", "Nit", "Nombre", "Producto", "Precio U.", "Total", "Usuario"
             }
         ));
         jScrollPane6.setViewportView(JtableFacturas);
@@ -1156,6 +1158,11 @@ private void mostrarFacturasEnTabla() {
         });
 
         jButton18.setText("Reporte Facturas");
+        jButton18.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton18ActionPerformed(evt);
+            }
+        });
 
         jButton29.setText("Reporte Proveedores");
         jButton29.addActionListener(new java.awt.event.ActionListener() {
@@ -2687,8 +2694,9 @@ try {
             int cantidad = entrada.readInt();
             float precio = entrada.readFloat();
             float total = entrada.readFloat();
+            String usuario = entrada.readUTF();
 
-            facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total));
+            facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario));
         }
     }
 
@@ -2763,9 +2771,25 @@ try {
     escritura.writeFloat(factura.getPrecio());
     escritura.writeFloat(factura.getTotal());
 
+    String usuario = factura.getUsuario();
+    if (usuario != null) {
+        escritura.writeUTF(usuario);
+    } else {
+        escritura.writeUTF("");
+    }
+
     escritura.close(); // Asegura que todos los datos se escriban en el archivo
 
     mostrarFacturasEnTabla();
+    
+    JtNoFactura.setText("");
+    JtNitFactura.setText("");
+    JtNombreFactura.setText("");
+    JtDireccionFactura.setText("");
+    JtNombreProducto.setText("");
+    JtCantidadProducto.setText("");
+    JtPrecioProducto.setText("");
+    JtTotalProducto.setText("");
 
     JOptionPane.showMessageDialog(this, "Agregado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 } catch (IOException ex) {
@@ -2773,6 +2797,53 @@ try {
     JOptionPane.showMessageDialog(this, "Error al guardar la factura", "Error", JOptionPane.ERROR_MESSAGE);
 }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
+
+                try {
+            String filePath = "Facturas.html";
+            try (FileWriter myWriter = new FileWriter(filePath); FileInputStream archivo = new FileInputStream("Facturas.bin"); DataInputStream lectura = new DataInputStream(archivo)) {
+
+                myWriter.write("<html><head><title>Reporte de Facturas</title>");
+                myWriter.write("<style>"
+                        + "body {font-family: Arial, sans-serif; padding: 0 10px;}"
+                        + "table {width: 100%; border-collapse: collapse; margin: 15px 0;}"
+                        + "th {background-color: #4CAF50; color: white;}"
+                        + "th, td {border: 1px solid #ddd; padding: 8px;}"
+                        + "tr:nth-child(even) {background-color: #f2f2f2;}"
+                        + "tr:hover {background-color: #ddd;}"
+                        + "</style></head><body>");
+                myWriter.write("<h2>Reporte de Facturas</h2>");
+                myWriter.write("<table><tr><th>No. Factura</th><th>Nit</th><th>Nombre</th><th>Direccion</th>"
+                        + "<th>Producto</th><th>Cantidad</th><th>Precio U.</th><th>Total</th><th>Usuario</th></tr>");
+
+                while (lectura.available() > 0) {
+                    String NoFactura = lectura.readUTF();
+                    String nit = lectura.readUTF();
+            String nombre = lectura.readUTF();
+            String direccion = lectura.readUTF();
+            String producto = lectura.readUTF();
+            int cantidad = lectura.readInt();
+            float precio = lectura.readFloat();
+            float total = lectura.readFloat();
+            String usuario = lectura.readUTF();
+                    
+                    
+                    myWriter.write("<tr><td>" + NoFactura + "</td><td>" + nit + "</td><td>" + nombre + "</td>"
+                            + "<td>" + direccion + "</td><td>" + producto+"</td><td>" + cantidad+"</td>"
+                                    + "<td>" + precio+"</td><td>" + total+"</td><td>" + usuario+"</td></tr>");
+                }
+
+                myWriter.write("</table></body></html>");
+            }
+
+            // Abrir el archivo HTML en el navegador predeterminado
+            Desktop.getDesktop().browse(new File(filePath).toURI());
+        } catch (IOException y) {
+            y.printStackTrace();
+        }
+   
+    }//GEN-LAST:event_jButton18ActionPerformed
 
     /**
      * @param args the command line arguments

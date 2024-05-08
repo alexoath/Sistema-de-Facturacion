@@ -29,8 +29,18 @@ public class Factura implements Serializable{
     private Integer Cantidad;
     private Float Precio;
     private Float Total;
+    private String Usuario;
+
+   
+    public String getUsuario() {
+        return Usuario;
+    }
+
+    public void setUsuario(String Usuario) {
+        this.Usuario = Usuario;
+    }
     
-    public Factura(String noFactura, String nit, String nombre, String direccion, String producto, int cantidad, float precio, float total) {
+    public Factura(String noFactura, String nit, String nombre, String direccion, String producto, int cantidad, float precio, float total, String Usuario) {
     this.NoFactura = noFactura;
     this.Nit = nit;
     this.Nombre = nombre;
@@ -39,6 +49,7 @@ public class Factura implements Serializable{
     this.Cantidad = cantidad;
     this.Precio = precio;
     this.Total = total;
+    this.Usuario = Usuario;
 
 }
 public Factura() {
