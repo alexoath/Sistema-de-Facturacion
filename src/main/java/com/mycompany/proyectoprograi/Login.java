@@ -5,8 +5,10 @@
 package com.mycompany.proyectoprograi;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
@@ -26,6 +28,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         setVisible(true);
         this.setLocationRelativeTo(null);
+        
         
     
     }
@@ -116,46 +119,65 @@ public class Login extends javax.swing.JFrame {
     private void JtIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JtIngresarActionPerformed
                                            
     String usuarioIngresado = JtUsuario.getText().trim();
-    String claveIngresada = new String(JtClave.getPassword());
+String claveIngresada = new String(JtClave.getPassword());
 
-    if ("admin".equals(usuarioIngresado) && "admin".equals(claveIngresada)) {
-        // Abrir la ventana del menú como administrador
-        Menu menu = new Menu();
-        menu.setVisible(true);
-        this.dispose();
-    } else {
-        try {
-            DataInputStream entrada = new DataInputStream(new FileInputStream("Empleados.bin"));
+if ("admin".equals(usuarioIngresado) && "admin".equals(claveIngresada)) {
+    // Abrir la ventana del menú como administrador
+    Menu menu = new Menu();
+    menu.setVisible(true);
+    this.dispose();
+    guardarUsuarioActivo(usuarioIngresado);
+} else {
+    try {
+        DataInputStream entrada = new DataInputStream(new FileInputStream("Empleados.bin"));
 
-            while (entrada.available() > 0) {
-                String codigo = entrada.readUTF();
-                String nombre = entrada.readUTF();
-                String puesto = entrada.readUTF();
-                String salario = entrada.readUTF();
-                String usuario = entrada.readUTF();
-                String clave = entrada.readUTF();
+        while (entrada.available() > 0) {
+            String codigo = entrada.readUTF();
+            String nombre = entrada.readUTF();
+            String puesto = entrada.readUTF();
+            String salario = entrada.readUTF();
+            String usuario = entrada.readUTF();
+            String clave = entrada.readUTF();
 
-                if (usuarioIngresado.equals(usuario) && claveIngresada.equals(clave)) {
-                    // Abrir la ventana del menú como empleado
-                    Menu menu = new Menu();
-                    menu.ocultarBoton();
-                    menu.ocultarTab1();
-                    menu.setVisible(true);
-                    
-                    this.dispose();
-                    return;
-                }
+            if (usuarioIngresado.equals(usuario) && claveIngresada.equals(clave)) {
+                // Abrir la ventana del menú como empleado
+                Menu menu = new Menu();
+                menu.ocultarBoton();
+                menu.ocultarTab1();
+                menu.setVisible(true);
+                
+                this.dispose();
+                guardarUsuarioActivo(usuarioIngresado);
+                return;
             }
-
-            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "El archivo de empleados no existe", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al leer el archivo de empleados", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (FileNotFoundException e) {
+        JOptionPane.showMessageDialog(this, "El archivo de empleados no existe", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (IOException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error al leer el archivo de empleados", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
     }
 
+private void guardarUsuarioActivo(String nombreUsuario) {
+    DataOutputStream salida = null;
+    try {
+        salida = new DataOutputStream(new FileOutputStream("UsuarioActivo.bin"));
+        salida.writeUTF(nombreUsuario);
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (salida != null) {
+                salida.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     }//GEN-LAST:event_JtIngresarActionPerformed
 
     /**

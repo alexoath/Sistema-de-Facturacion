@@ -20,166 +20,154 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Walter Morales
  */
-
 public class Menu extends javax.swing.JFrame {
-    
-     
-    
-    
+
     public Menu() {
         initComponents();
-        setVisible(true);
-        this.setLocationRelativeTo(null);
-        mostrarEmpleadosEnTabla();
-        mostrarProveedoresEnTabla();
-        mostarClientesEnTabla();
-        mostarArticulosEnTabla();
-        mostrarFacturasEnTabla();
-        
- 
-    }
+    setVisible(true);
+    this.setLocationRelativeTo(null);
+    mostrarEmpleadosEnTabla();
+    mostrarProveedoresEnTabla();
+    mostarClientesEnTabla();
+    mostarArticulosEnTabla();
+    mostrarFacturasEnTabla();
     
+
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+        public void run() {
+            eliminarUsuarioActivo();
+        }
+    });
+}
+
     public void ocultarBoton() {
-        // Ocultar el botón
         JtEmpleados.setVisible(false);
-    
-}
-    
-    public void ocultarTab1(){
-        //Ocultar tab1 "Empleados"
-         Jpanel.removeTabAt(5);  // Asume que la pestaña 1 es la primera pestaña
-    
+
     }
-    
+
+    public void ocultarTab1() {
+
+        Jpanel.removeTabAt(5);
+
+    }
+
     private void mostrarEmpleadosEnTabla() {
-    try {
-        // Leer todos los empleados
-        ArrayList empleados = new ArrayList();
-        DataInputStream entrada = new DataInputStream(new FileInputStream("Empleados.bin"));
+        try {
+            // Leer todos los empleados
+            ArrayList empleados = new ArrayList();
+            DataInputStream entrada = new DataInputStream(new FileInputStream("Empleados.bin"));
 
-        while (entrada.available() > 0) {
-            String codigo = entrada.readUTF();
-            String nombre = entrada.readUTF();
-            String puesto = entrada.readUTF();
-            String salario = entrada.readUTF();
-            String usuario = entrada.readUTF();
-            String clave = entrada.readUTF();
+            while (entrada.available() > 0) {
+                String codigo = entrada.readUTF();
+                String nombre = entrada.readUTF();
+                String puesto = entrada.readUTF();
+                String salario = entrada.readUTF();
+                String usuario = entrada.readUTF();
+                String clave = entrada.readUTF();
 
-            empleados.add(new String[] {codigo, nombre, puesto, salario, usuario, clave});
+                empleados.add(new String[]{codigo, nombre, puesto, salario, usuario, clave});
+            }
+
+            entrada.close();
+
+            // Crear la tabla
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Código");
+            model.addColumn("Nombre");
+            model.addColumn("Puesto");
+            model.addColumn("Salario");
+            model.addColumn("Usuario");
+            model.addColumn("Clave");
+
+            // Agregar empleados
+            for (int i = 0; i < empleados.size(); i++) {
+                String[] empleado = (String[]) empleados.get(i);
+                model.addRow(empleado);
+            }
+
+            JtableEmpleados.setModel(model);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "El archivo de empleados no existe", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al leer el archivo de empleados", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        entrada.close();
-
-        // Crear un modelo para la tabla
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Código");
-        model.addColumn("Nombre");
-        model.addColumn("Puesto");
-        model.addColumn("Salario");
-        model.addColumn("Usuario");
-        model.addColumn("Clave");
-
-        // Agregar los empleados al modelo
-        for (int i = 0; i < empleados.size(); i++) {
-            String[] empleado = (String[]) empleados.get(i);
-            model.addRow(empleado);
-        }
-
-        // Asignar el modelo a la tabla
-        JtableEmpleados.setModel(model);
-    } catch (FileNotFoundException e) {
-        JOptionPane.showMessageDialog(this, "El archivo de empleados no existe", "Error", JOptionPane.ERROR_MESSAGE);
-    } catch (IOException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al leer el archivo de empleados", "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
-    
- private void mostrarProveedoresEnTabla() {
-    try {
-        // Leer todos los empleados
-        ArrayList proveedores = new ArrayList();
-        DataInputStream entrada = new DataInputStream(new FileInputStream("Proveedores.bin"));
 
-        while (entrada.available() > 0) {
-            String codigo = entrada.readUTF();
-            String nit = entrada.readUTF();
-            String nombre = entrada.readUTF();
-            String direccion = entrada.readUTF();
-            String telefono = entrada.readUTF();
-            
+    private void mostrarProveedoresEnTabla() {
+        try {
+            ArrayList proveedores = new ArrayList();
+            DataInputStream entrada = new DataInputStream(new FileInputStream("Proveedores.bin"));
 
-            proveedores.add(new String[] {codigo, nit, nombre, direccion, telefono});
+            while (entrada.available() > 0) {
+                String codigo = entrada.readUTF();
+                String nit = entrada.readUTF();
+                String nombre = entrada.readUTF();
+                String direccion = entrada.readUTF();
+                String telefono = entrada.readUTF();
+
+                proveedores.add(new String[]{codigo, nit, nombre, direccion, telefono});
+            }
+
+            entrada.close();
+
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Código");
+            model.addColumn("Nit");
+            model.addColumn("Nombre");
+            model.addColumn("Direccion");
+            model.addColumn("Telefono");
+
+            for (int i = 0; i < proveedores.size(); i++) {
+                String[] proveedor = (String[]) proveedores.get(i);
+                model.addRow(proveedor);
+            }
+
+            JtableProveedores.setModel(model);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "El archivo de Proveedores no existe", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al leer el archivo de Proveedores", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        entrada.close();
-
-        // Crear un modelo para la tabla
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Código");
-        model.addColumn("Nit");
-        model.addColumn("Nombre");
-        model.addColumn("Direccion");
-        model.addColumn("Telefono");
-        
-
-        // Agregar los Proveedores al modelo
-        for (int i = 0; i < proveedores.size(); i++) {
-            String[] proveedor = (String[]) proveedores.get(i);
-            model.addRow(proveedor);
-        }
-
-        // Asignar el modelo a la tabla
-        JtableProveedores.setModel(model);
-    } catch (FileNotFoundException e) {
-        JOptionPane.showMessageDialog(this, "El archivo de Proveedores no existe", "Error", JOptionPane.ERROR_MESSAGE);
-    } catch (IOException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al leer el archivo de Proveedores", "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
-private void mostarClientesEnTabla() {
-    try {
-        // Leer todos los empleados
-        ArrayList clientes = new ArrayList();
-        DataInputStream entrada = new DataInputStream(new FileInputStream("Clientes.bin"));
+    private void mostarClientesEnTabla() {
+        try {
+            ArrayList clientes = new ArrayList();
+            DataInputStream entrada = new DataInputStream(new FileInputStream("Clientes.bin"));
 
-        while (entrada.available() > 0) {
-            String nit = entrada.readUTF();
-            String nombre = entrada.readUTF();
-            String direccion = entrada.readUTF();
+            while (entrada.available() > 0) {
+                String nit = entrada.readUTF();
+                String nombre = entrada.readUTF();
+                String direccion = entrada.readUTF();
 
+                clientes.add(new String[]{nit, nombre, direccion});
+            }
 
-            clientes.add(new String[] {nit, nombre, direccion});
+            entrada.close();
+
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Nit");
+            model.addColumn("Nombre");
+            model.addColumn("Direccion");
+
+            for (int i = 0; i < clientes.size(); i++) {
+                String[] cliente = (String[]) clientes.get(i);
+                model.addRow(cliente);
+            }
+
+            JtableClientes.setModel(model);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "El archivo de empleados no existe", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al leer el archivo de empleados", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        entrada.close();
-
-        // Crear un modelo para la tabla
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Nit");
-        model.addColumn("Nombre");
-        model.addColumn("Direccion");
-
-        // Agregar los empleados al modelo
-        for (int i = 0; i < clientes.size(); i++) {
-            String[] cliente = (String[]) clientes.get(i);
-            model.addRow(cliente);
-        }
-
-        // Asignar el modelo a la tabla
-        JtableClientes.setModel(model);
-    } catch (FileNotFoundException e) {
-        JOptionPane.showMessageDialog(this, "El archivo de empleados no existe", "Error", JOptionPane.ERROR_MESSAGE);
-    } catch (IOException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al leer el archivo de empleados", "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
-private void mostarArticulosEnTabla() {
-    try {
+    private void mostarArticulosEnTabla() {
+            try {
         // Leer todos los empleados
         ArrayList articulos = new ArrayList();
         DataInputStream entrada = new DataInputStream(new FileInputStream("Articulos.bin"));
@@ -222,58 +210,50 @@ private void mostarArticulosEnTabla() {
 }
 
 
-private void mostrarFacturasEnTabla() {
-    try {
-        // Leer todas las facturas
-        ArrayList<Factura> facturas = new ArrayList<>();
-        try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
-            while (entrada.available() > 0) {
-                String noFactura = entrada.readUTF();
-                String nit = entrada.readUTF();
-                String nombre = entrada.readUTF();
-                String direccion = entrada.readUTF();
-                String producto = entrada.readUTF();
-                int cantidad = entrada.readInt();
-                float precio = entrada.readFloat();
-                float total = entrada.readFloat();
-                String usuario = entrada.readUTF(); // Leer el usuario
+    private void mostrarFacturasEnTabla() {
+        try {
+            ArrayList<Factura> facturas = new ArrayList<>();
+            try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
+                while (entrada.available() > 0) {
+                    String noFactura = entrada.readUTF();
+                    String nit = entrada.readUTF();
+                    String nombre = entrada.readUTF();
+                    String direccion = entrada.readUTF();
+                    String producto = entrada.readUTF();
+                    int cantidad = entrada.readInt();
+                    float precio = entrada.readFloat();
+                    float total = entrada.readFloat();
+                    String usuario = entrada.readUTF();
 
-                facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario)); // Agregar el usuario a la factura
+                    facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario));
+                }
             }
+
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("No. Factura");
+            model.addColumn("NIT");
+            model.addColumn("Nombre");
+            model.addColumn("Dirección");
+            model.addColumn("Producto");
+            model.addColumn("Cantidad");
+            model.addColumn("Precio");
+            model.addColumn("Total");
+            model.addColumn("Usuario");
+
+            for (Factura factura : facturas) {
+                Object[] fila = {factura.getNoFactura(), factura.getNit(), factura.getNombre(), factura.getDireccion(), factura.getProducto(), factura.getCantidad(), factura.getPrecio(), factura.getTotal(), factura.getUsuario()};
+                model.addRow(fila);
+            }
+
+            JtableFacturas.setModel(model);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "El archivo de facturas no existe", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al leer el archivo de facturas", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Crear un modelo para la tabla
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("No. Factura");
-        model.addColumn("NIT");
-        model.addColumn("Nombre");
-        model.addColumn("Dirección");
-        model.addColumn("Producto");
-        model.addColumn("Cantidad");
-        model.addColumn("Precio");
-        model.addColumn("Total");
-        model.addColumn("Usuario"); // Agregar una columna de "Usuario"
-
-        // Agregar las facturas al modelo
-        for (Factura factura : facturas) {
-            Object[] fila = {factura.getNoFactura(), factura.getNit(), factura.getNombre(), factura.getDireccion(), factura.getProducto(), factura.getCantidad(), factura.getPrecio(), factura.getTotal(), factura.getUsuario()}; // Agregar el usuario a la fila
-            model.addRow(fila);
-        }
-
-        // Asignar el modelo a la tabla
-        JtableFacturas.setModel(model);
-    } catch (FileNotFoundException e) {
-        JOptionPane.showMessageDialog(this, "El archivo de facturas no existe", "Error", JOptionPane.ERROR_MESSAGE);
-    } catch (IOException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al leer el archivo de facturas", "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -359,6 +339,7 @@ private void mostrarFacturasEnTabla() {
         jButton28 = new javax.swing.JButton();
         JtNoFactura = new javax.swing.JTextField();
         jLabel28 = new javax.swing.JLabel();
+        JUser = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
@@ -1095,7 +1076,9 @@ private void mostrarFacturasEnTabla() {
                 .addComponent(jButton1)
                 .addGap(30, 30, 30)
                 .addComponent(jButton28)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(JUser, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(61, 61, 61))
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1125,7 +1108,8 @@ private void mostrarFacturasEnTabla() {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton28)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(JUser, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26))
             .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel6Layout.createSequentialGroup()
@@ -1361,9 +1345,9 @@ private void mostrarFacturasEnTabla() {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(28, 28, 28)
                 .addComponent(Jpanel, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -1419,11 +1403,11 @@ private void mostrarFacturasEnTabla() {
 
             while (entrada.available() > 0) {
                 String codigo = entrada.readUTF();
-                entrada.readUTF(); // Saltar nombre
-                entrada.readUTF(); // Saltar puesto
-                entrada.readUTF(); // Saltar salario
-                entrada.readUTF(); // Saltar usuario
-                entrada.readUTF(); // Saltar clave
+                entrada.readUTF();
+                entrada.readUTF();
+                entrada.readUTF();
+                entrada.readUTF();
+                entrada.readUTF();
 
                 if (codigo.equals(codEmpleado)) {
                     entrada.close();
@@ -1497,7 +1481,6 @@ private void mostrarFacturasEnTabla() {
 
         if (!codEmpleado.isEmpty()) {
             try {
-                // Leer todos los empleados
                 ArrayList empleados = new ArrayList();
                 DataInputStream entrada = new DataInputStream(new FileInputStream("Empleados.bin"));
 
@@ -1523,12 +1506,10 @@ private void mostrarFacturasEnTabla() {
 
                 entrada.close();
 
-                // Buscar el empleado para editar
                 for (int i = 0; i < empleados.size(); i++) {
                     String[] empleado = (String[]) empleados.get(i);
 
                     if (empleado[0].equals(codEmpleado)) {
-                        // Editar los detalles del empleado
                         empleado[1] = JtNombreEmpleado.getText();
                         empleado[2] = JtPuesto.getText();
                         empleado[3] = JtSalario.getText();
@@ -1539,7 +1520,6 @@ private void mostrarFacturasEnTabla() {
                     }
                 }
 
-                // Reescribir todos los empleados en el archivo
                 DataOutputStream salida = new DataOutputStream(new FileOutputStream("Empleados.bin"));
 
                 for (int i = 0; i < empleados.size(); i++) {
@@ -1573,7 +1553,6 @@ private void mostrarFacturasEnTabla() {
             DataInputStream entrada = null;
             DataOutputStream salida = null;
             try {
-                // Leer todos los empleados
                 List<Empleado> empleados = new ArrayList<>();
                 entrada = new DataInputStream(new FileInputStream("Empleados.bin"));
 
@@ -1589,13 +1568,11 @@ private void mostrarFacturasEnTabla() {
                     empleados.add(empleado);
                 }
 
-                // Buscar el empleado para eliminar
                 Iterator<Empleado> iterator = empleados.iterator();
                 while (iterator.hasNext()) {
                     Empleado empleado = iterator.next();
 
                     if (empleado.getCodigo().equals(codEmpleado)) {
-                        // Eliminar el empleado
                         iterator.remove();
 
                         JOptionPane.showMessageDialog(this, "Empleado eliminado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -1603,7 +1580,6 @@ private void mostrarFacturasEnTabla() {
                     }
                 }
 
-                // Reescribir todos los empleados en el archivo
                 salida = new DataOutputStream(new FileOutputStream("Empleados.bin"));
 
                 for (Empleado empleado : empleados) {
@@ -1714,10 +1690,10 @@ private void mostrarFacturasEnTabla() {
             while (entrada.available() > 0) {
                 String codigo = entrada.readUTF();
 
-                entrada.readUTF(); // Saltar nit
-                entrada.readUTF(); // Saltar nombre
-                entrada.readUTF(); // Saltar direccion
-                entrada.readUTF(); // Saltar telefono
+                entrada.readUTF();
+                entrada.readUTF();
+                entrada.readUTF();
+                entrada.readUTF();
 
                 if (codigo.equals(codProveedor)) {
                     entrada.close();
@@ -1780,7 +1756,6 @@ private void mostrarFacturasEnTabla() {
 
         if (!codProveedor.isEmpty()) {
             try {
-                // Leer todos los empleados
                 ArrayList proveedores = new ArrayList();
                 DataInputStream entrada = new DataInputStream(new FileInputStream("Proveedores.bin"));
 
@@ -1803,12 +1778,10 @@ private void mostrarFacturasEnTabla() {
 
                 entrada.close();
 
-                // Buscar el empleado para editar
                 for (int i = 0; i < proveedores.size(); i++) {
                     String[] proveedor = (String[]) proveedores.get(i);
 
                     if (proveedor[0].equals(codProveedor)) {
-                        // Editar los detalles del empleado
                         proveedor[1] = TfNitProveedor.getText();
                         proveedor[2] = TfNombreProveedor.getText();
                         proveedor[3] = TfDireccionProveedor.getText();
@@ -1818,7 +1791,6 @@ private void mostrarFacturasEnTabla() {
                     }
                 }
 
-                // Reescribir todos los empleados en el archivo
                 DataOutputStream salida = new DataOutputStream(new FileOutputStream("Proveedores.bin"));
 
                 for (int i = 0; i < proveedores.size(); i++) {
@@ -1852,7 +1824,6 @@ private void mostrarFacturasEnTabla() {
             DataInputStream entrada = null;
             DataOutputStream salida = null;
             try {
-                // Leer todos los proveedores
                 List<Proveedor> proveedores = new ArrayList<>();
                 entrada = new DataInputStream(new FileInputStream("Proveedores.bin"));
 
@@ -1867,13 +1838,11 @@ private void mostrarFacturasEnTabla() {
                     proveedores.add(proveedor);
                 }
 
-                // Buscar el proveedor para eliminar
                 Iterator<Proveedor> iterator = proveedores.iterator();
                 while (iterator.hasNext()) {
                     Proveedor proveedor = iterator.next();
 
                     if (proveedor.getCodigo().equals(codProveedor)) {
-                        // Eliminar el proveedor
                         iterator.remove();
 
                         JOptionPane.showMessageDialog(this, "Proveedor eliminado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -1881,7 +1850,6 @@ private void mostrarFacturasEnTabla() {
                     }
                 }
 
-                // Reescribir todos los proveedores en el archivo
                 salida = new DataOutputStream(new FileOutputStream("Proveedores.bin"));
 
                 for (Proveedor proveedor : proveedores) {
@@ -1955,8 +1923,8 @@ private void mostrarFacturasEnTabla() {
 
             while (entrada.available() > 0) {
                 String nit = entrada.readUTF();
-                entrada.readUTF(); // Saltar nombre
-                entrada.readUTF(); // Saltar dirección
+                entrada.readUTF();
+                entrada.readUTF();
 
                 if (nit.equals(nitCliente)) {
                     entrada.close();
@@ -2018,7 +1986,6 @@ private void mostrarFacturasEnTabla() {
             DataInputStream entrada = null;
             DataOutputStream salida = null;
             try {
-                // Leer todos los clientes
                 List<Cliente> clientes = new ArrayList<>();
                 entrada = new DataInputStream(new FileInputStream("Clientes.bin"));
 
@@ -2031,7 +1998,6 @@ private void mostrarFacturasEnTabla() {
                     clientes.add(cliente);
                 }
 
-                // Buscar el cliente para editar
                 for (Cliente cliente : clientes) {
                     if (cliente.getNit().equals(nitCliente)) {
                         // Editar los detalles del cliente
@@ -2042,7 +2008,6 @@ private void mostrarFacturasEnTabla() {
                     }
                 }
 
-                // Reescribir todos los clientes en el archivo
                 salida = new DataOutputStream(new FileOutputStream("Clientes.bin"));
 
                 for (Cliente cliente : clientes) {
@@ -2082,7 +2047,6 @@ private void mostrarFacturasEnTabla() {
             DataInputStream entrada = null;
             DataOutputStream salida = null;
             try {
-                // Leer todos los clientes
                 List<Cliente> clientes = new ArrayList<>();
                 entrada = new DataInputStream(new FileInputStream("Clientes.bin"));
 
@@ -2095,13 +2059,11 @@ private void mostrarFacturasEnTabla() {
                     clientes.add(cliente);
                 }
 
-                // Buscar el cliente para eliminar
                 Iterator<Cliente> iterator = clientes.iterator();
                 while (iterator.hasNext()) {
                     Cliente cliente = iterator.next();
 
                     if (cliente.getNit().equals(nitCliente)) {
-                        // Eliminar el cliente
                         iterator.remove();
 
                         JOptionPane.showMessageDialog(this, "Cliente eliminado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -2109,7 +2071,6 @@ private void mostrarFacturasEnTabla() {
                     }
                 }
 
-                // Reescribir todos los clientes en el archivo
                 salida = new DataOutputStream(new FileOutputStream("Clientes.bin"));
 
                 for (Cliente cliente : clientes) {
@@ -2244,6 +2205,7 @@ private void mostrarFacturasEnTabla() {
             return false;
         }
         return false;
+    
     }//GEN-LAST:event_BtGuardarArticuloActionPerformed
 
     private void BtBuscarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtBuscarArticuloActionPerformed
@@ -2283,11 +2245,11 @@ private void mostrarFacturasEnTabla() {
         } else {
             JOptionPane.showMessageDialog(this, "Por favor ingrese un código de Articulos", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    
     }//GEN-LAST:event_BtBuscarArticuloActionPerformed
 
     private void BtEditarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtEditarArticuloActionPerformed
-
-        String nombreArticulo = JtNombreArticulo.getText().trim();
+    String nombreArticulo = JtNombreArticulo.getText().trim();
 
         if (!nombreArticulo.isEmpty()) {
             DataInputStream entrada = null;
@@ -2353,6 +2315,7 @@ private void mostrarFacturasEnTabla() {
         } else {
             JOptionPane.showMessageDialog(this, "Por favor ingrese un nombre de articulo", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    
     }//GEN-LAST:event_BtEditarArticuloActionPerformed
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
@@ -2386,7 +2349,6 @@ private void mostrarFacturasEnTabla() {
                 myWriter.write("</table></body></html>");
             }
 
-            // Abrir el archivo HTML en el navegador predeterminado
             Desktop.getDesktop().browse(new File(filePath).toURI());
         } catch (IOException y) {
             y.printStackTrace();
@@ -2423,7 +2385,6 @@ private void mostrarFacturasEnTabla() {
                 myWriter.write("</table></body></html>");
             }
 
-            // Abrir el archivo HTML en el navegador predeterminado
             Desktop.getDesktop().browse(new File(filePath).toURI());
         } catch (IOException y) {
             y.printStackTrace();
@@ -2460,7 +2421,6 @@ private void mostrarFacturasEnTabla() {
                 myWriter.write("</table></body></html>");
             }
 
-            // Abrir el archivo HTML en el navegador predeterminado
             Desktop.getDesktop().browse(new File(filePath).toURI());
         } catch (IOException y) {
             y.printStackTrace();
@@ -2496,7 +2456,6 @@ private void mostrarFacturasEnTabla() {
                 myWriter.write("</table></body></html>");
             }
 
-            // Abrir el archivo HTML en el navegador predeterminado
             Desktop.getDesktop().browse(new File(filePath).toURI());
         } catch (IOException y) {
             y.printStackTrace();
@@ -2504,7 +2463,8 @@ private void mostrarFacturasEnTabla() {
     }//GEN-LAST:event_jButton16ActionPerformed
 
     private void jButton27ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton27ActionPerformed
-String nitCliente = JtNitFactura.getText();
+
+        String nitCliente = JtNitFactura.getText();
 
 if (!existeCliente(nitCliente)) {
     JOptionPane.showMessageDialog(this, "El cliente no existe", "Error", JOptionPane.ERROR_MESSAGE);
@@ -2564,6 +2524,7 @@ if (!existeCliente(nitCliente)) {
                     
                     // Generar un nuevo UUID
         UUID newUuid = UUID.randomUUID();
+        mostrarUsuarioActivo();
 
         // Supongamos que JtNoFactura es un JTextField
         JtNoFactura.setText(newUuid.toString());
@@ -2585,8 +2546,6 @@ if (!existeCliente(nitCliente)) {
             }
         }
     }
-
-
 }
     }//GEN-LAST:event_jButton27ActionPerformed
 
@@ -2595,14 +2554,12 @@ if (!existeCliente(nitCliente)) {
     }//GEN-LAST:event_JtNitFacturaActionPerformed
 
     private void BtEliminarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtEliminarArticuloActionPerformed
-
         String nombreArticulo = JtNombreArticulo.getText().trim();
 
         if (!nombreArticulo.isEmpty()) {
             DataInputStream entrada = null;
             DataOutputStream salida = null;
             try {
-                // Leer todos los articulos
                 List<Articulo> articulos = new ArrayList<>();
                 entrada = new DataInputStream(new FileInputStream("Articulos.bin"));
 
@@ -2610,20 +2567,18 @@ if (!existeCliente(nitCliente)) {
                     Articulo articulo = new Articulo();
                     articulo.setNombre(entrada.readUTF());
                     articulo.setDescripcion(entrada.readUTF());
-                    articulo.setCantidad(Integer.parseInt(entrada.readUTF()));
-                    articulo.setPrecio(Float.parseFloat(entrada.readUTF()));
+                    articulo.setCantidad(entrada.readInt());
+                    articulo.setPrecio(entrada.readFloat());
                     articulo.setProveedor(entrada.readUTF());
 
                     articulos.add(articulo);
                 }
 
-                // Buscar el articulo para eliminar
                 Iterator<Articulo> iterator = articulos.iterator();
                 while (iterator.hasNext()) {
                     Articulo articulo = iterator.next();
 
                     if (articulo.getNombre().equals(nombreArticulo)) {
-                        // Eliminar el articulo
                         iterator.remove();
 
                         JOptionPane.showMessageDialog(this, "Articulo eliminado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -2631,14 +2586,13 @@ if (!existeCliente(nitCliente)) {
                     }
                 }
 
-                // Reescribir todos los articulos en el archivo
                 salida = new DataOutputStream(new FileOutputStream("Articulos.bin"));
 
                 for (Articulo articulo : articulos) {
                     salida.writeUTF(articulo.getNombre());
                     salida.writeUTF(articulo.getDescripcion());
-                    salida.writeUTF(String.valueOf(articulo.getCantidad()));
-                    salida.writeUTF(String.valueOf(articulo.getPrecio()));
+                    salida.writeInt(articulo.getCantidad());
+                    salida.writeFloat(articulo.getPrecio());
                     salida.writeUTF(articulo.getProveedor());
                 }
 
@@ -2681,66 +2635,62 @@ if (!existeCliente(nitCliente)) {
     }//GEN-LAST:event_JtTotalProductoActionPerformed
 
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
-try {
-    // Leer todas las facturas
-    ArrayList<Factura> facturas = new ArrayList<>();
-    try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
-        while (entrada.available() > 0) {
-            String noFactura = entrada.readUTF();
-            String nit = entrada.readUTF();
-            String nombre = entrada.readUTF();
-            String direccion = entrada.readUTF();
-            String producto = entrada.readUTF();
-            int cantidad = entrada.readInt();
-            float precio = entrada.readFloat();
-            float total = entrada.readFloat();
-            String usuario = entrada.readUTF();
+        try {
+            ArrayList<Factura> facturas = new ArrayList<>();
+            try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
+                while (entrada.available() > 0) {
+                    String noFactura = entrada.readUTF();
+                    String nit = entrada.readUTF();
+                    String nombre = entrada.readUTF();
+                    String direccion = entrada.readUTF();
+                    String producto = entrada.readUTF();
+                    int cantidad = entrada.readInt();
+                    float precio = entrada.readFloat();
+                    float total = entrada.readFloat();
+                    String usuario = entrada.readUTF();
 
-            facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario));
-        }
-    }
-
-    // Buscar la factura a anular
-    String noFacturaAnular = JtNoFactura.getText();
-    Factura facturaAnular = null;
-    for (Factura factura : facturas) {
-        if (factura.getNoFactura().equals(noFacturaAnular)) {
-            facturaAnular = factura;
-            break;
-        }
-    }
-
-    if (facturaAnular != null) {
-        // Anular la factura
-        facturas.remove(facturaAnular);
-
-        // Reescribir todas las facturas en el archivo
-        try (DataOutputStream salida = new DataOutputStream(new FileOutputStream("Facturas.bin"))) {
-            for (Factura factura : facturas) {
-                salida.writeUTF(factura.getNoFactura());
-                salida.writeUTF(factura.getNit());
-                salida.writeUTF(factura.getNombre());
-                salida.writeUTF(factura.getDireccion());
-                salida.writeUTF(factura.getProducto());
-                salida.writeInt(factura.getCantidad());
-                salida.writeFloat(factura.getPrecio());
-                salida.writeFloat(factura.getTotal());
+                    facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario));
+                }
             }
+
+            String noFacturaAnular = JtNoFactura.getText();
+            Factura facturaAnular = null;
+            for (Factura factura : facturas) {
+                if (factura.getNoFactura().equals(noFacturaAnular)) {
+                    facturaAnular = factura;
+                    break;
+                }
+            }
+
+            if (facturaAnular != null) {
+                facturas.remove(facturaAnular);
+
+                try (DataOutputStream salida = new DataOutputStream(new FileOutputStream("Facturas.bin"))) {
+                    for (Factura factura : facturas) {
+                        salida.writeUTF(factura.getNoFactura());
+                        salida.writeUTF(factura.getNit());
+                        salida.writeUTF(factura.getNombre());
+                        salida.writeUTF(factura.getDireccion());
+                        salida.writeUTF(factura.getProducto());
+                        salida.writeInt(factura.getCantidad());
+                        salida.writeFloat(factura.getPrecio());
+                        salida.writeFloat(factura.getTotal());
+                    }
+                }
+
+                mostrarFacturasEnTabla();
+
+                JtNoFactura.setText("");
+
+                JOptionPane.showMessageDialog(this, "Factura anulada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontró la factura", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al anular la factura", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        mostrarFacturasEnTabla();
-        
-        JtNoFactura.setText("");
-
-        JOptionPane.showMessageDialog(this, "Factura anulada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        JOptionPane.showMessageDialog(this, "No se encontró la factura", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-} catch (IOException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error al anular la factura", "Error", JOptionPane.ERROR_MESSAGE);
-}
-        
     }//GEN-LAST:event_jButton28ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -2761,6 +2711,7 @@ try {
     factura.setCantidad(Integer.parseInt(JtCantidadProducto.getText()));
     factura.setPrecio(Float.parseFloat(JtPrecioProducto.getText()));
     factura.setTotal(Float.parseFloat(JtTotalProducto.getText()));
+    factura.setUsuario(JUser.getText());
 
     escritura.writeUTF(factura.getNoFactura());
     escritura.writeUTF(factura.getNit());
@@ -2770,18 +2721,12 @@ try {
     escritura.writeInt(factura.getCantidad());
     escritura.writeFloat(factura.getPrecio());
     escritura.writeFloat(factura.getTotal());
+    escritura.writeUTF(factura.getUsuario());
 
-    String usuario = factura.getUsuario();
-    if (usuario != null) {
-        escritura.writeUTF(usuario);
-    } else {
-        escritura.writeUTF("");
-    }
-
-    escritura.close(); // Asegura que todos los datos se escriban en el archivo
+    escritura.close();
 
     mostrarFacturasEnTabla();
-    
+
     JtNoFactura.setText("");
     JtNitFactura.setText("");
     JtNombreFactura.setText("");
@@ -2800,7 +2745,7 @@ try {
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
 
-                try {
+        try {
             String filePath = "Facturas.html";
             try (FileWriter myWriter = new FileWriter(filePath); FileInputStream archivo = new FileInputStream("Facturas.bin"); DataInputStream lectura = new DataInputStream(archivo)) {
 
@@ -2820,65 +2765,91 @@ try {
                 while (lectura.available() > 0) {
                     String NoFactura = lectura.readUTF();
                     String nit = lectura.readUTF();
-            String nombre = lectura.readUTF();
-            String direccion = lectura.readUTF();
-            String producto = lectura.readUTF();
-            int cantidad = lectura.readInt();
-            float precio = lectura.readFloat();
-            float total = lectura.readFloat();
-            String usuario = lectura.readUTF();
-                    
-                    
+                    String nombre = lectura.readUTF();
+                    String direccion = lectura.readUTF();
+                    String producto = lectura.readUTF();
+                    int cantidad = lectura.readInt();
+                    float precio = lectura.readFloat();
+                    float total = lectura.readFloat();
+                    String usuario = lectura.readUTF();
+
                     myWriter.write("<tr><td>" + NoFactura + "</td><td>" + nit + "</td><td>" + nombre + "</td>"
-                            + "<td>" + direccion + "</td><td>" + producto+"</td><td>" + cantidad+"</td>"
-                                    + "<td>" + precio+"</td><td>" + total+"</td><td>" + usuario+"</td></tr>");
+                            + "<td>" + direccion + "</td><td>" + producto + "</td><td>" + cantidad + "</td>"
+                            + "<td>" + precio + "</td><td>" + total + "</td><td>" + usuario + "</td></tr>");
                 }
 
                 myWriter.write("</table></body></html>");
             }
 
-            // Abrir el archivo HTML en el navegador predeterminado
             Desktop.getDesktop().browse(new File(filePath).toURI());
         } catch (IOException y) {
             y.printStackTrace();
         }
-   
+
     }//GEN-LAST:event_jButton18ActionPerformed
 
+    private void mostrarUsuarioActivo() {
+    File archivo = new File("UsuarioActivo.bin");
+    if (archivo.exists()) {
+        DataInputStream entrada = null;
+        try {
+            entrada = new DataInputStream(new FileInputStream(archivo));
+            String nombreUsuario = entrada.readUTF();
+            JUser.setText(nombreUsuario);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (entrada != null) {
+                    entrada.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+    
+    private void eliminarUsuarioActivo() {
+        File archivo = new File("UsuarioActivo.bin");
+        if (archivo.exists()) {
+            archivo.delete();
+        }
+    }
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-     */
-    try {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-    } catch (ClassNotFoundException ex) {
-        java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(Menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
+        //</editor-fold>
 
-    /* Create and display the form */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            new Menu().setVisible(true);
-        }
-    });
-}
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Menu().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtBuscar;
@@ -2896,6 +2867,7 @@ try {
     private javax.swing.JButton BtGuardarArticulo;
     private javax.swing.JButton BtGuardarCliente;
     private javax.swing.JButton BtGuardarProveedor;
+    private javax.swing.JLabel JUser;
     private javax.swing.JButton JbGuardar;
     private javax.swing.JTabbedPane Jpanel;
     private javax.swing.JTextField JtCantidadArticulo;
