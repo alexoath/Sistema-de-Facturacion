@@ -24,21 +24,20 @@ public class Menu extends javax.swing.JFrame {
 
     public Menu() {
         initComponents();
-    setVisible(true);
-    this.setLocationRelativeTo(null);
-    mostrarEmpleadosEnTabla();
-    mostrarProveedoresEnTabla();
-    mostarClientesEnTabla();
-    mostarArticulosEnTabla();
-    mostrarFacturasEnTabla();
-    
+        setVisible(true);
+        this.setLocationRelativeTo(null);
+        mostrarEmpleadosEnTabla();
+        mostrarProveedoresEnTabla();
+        mostarClientesEnTabla();
+        mostarArticulosEnTabla();
+        mostrarFacturasEnTabla();
 
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-        public void run() {
-            eliminarUsuarioActivo();
-        }
-    });
-}
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                eliminarUsuarioActivo();
+            }
+        });
+    }
 
     public void ocultarBoton() {
         JtEmpleados.setVisible(false);
@@ -167,48 +166,46 @@ public class Menu extends javax.swing.JFrame {
     }
 
     private void mostarArticulosEnTabla() {
-            try {
-        // Leer todos los empleados
-        ArrayList articulos = new ArrayList();
-        DataInputStream entrada = new DataInputStream(new FileInputStream("Articulos.bin"));
+        try {
+            // Leer todos los empleados
+            ArrayList articulos = new ArrayList();
+            DataInputStream entrada = new DataInputStream(new FileInputStream("Articulos.bin"));
 
-        while (entrada.available() > 0) {
-            String nombre = entrada.readUTF();
-            String descripcion = entrada.readUTF();
-            String cantidad = entrada.readUTF();
-            String precio = entrada.readUTF();
-            String proveedor = entrada.readUTF();
+            while (entrada.available() > 0) {
+                String nombre = entrada.readUTF();
+                String descripcion = entrada.readUTF();
+                String cantidad = entrada.readUTF();
+                String precio = entrada.readUTF();
+                String proveedor = entrada.readUTF();
 
+                articulos.add(new String[]{nombre, descripcion, cantidad, precio, proveedor});
+            }
 
-            articulos.add(new String[] {nombre, descripcion, cantidad, precio, proveedor});
+            entrada.close();
+
+            // Crear un modelo para la tabla
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Nombre");
+            model.addColumn("Descripcion");
+            model.addColumn("Cantidad");
+            model.addColumn("Precio");
+            model.addColumn("Proveedor");
+
+            // Agregar los empleados al modelo
+            for (int i = 0; i < articulos.size(); i++) {
+                String[] articulo = (String[]) articulos.get(i);
+                model.addRow(articulo);
+            }
+
+            // Asignar el modelo a la tabla
+            JtableArticulos.setModel(model);
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "El archivo de articulos no existe", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al leer el archivo de articulos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        entrada.close();
-
-        // Crear un modelo para la tabla
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Nombre");
-        model.addColumn("Descripcion");
-        model.addColumn("Cantidad");
-        model.addColumn("Precio");
-        model.addColumn("Proveedor");
-
-        // Agregar los empleados al modelo
-        for (int i = 0; i < articulos.size(); i++) {
-            String[] articulo = (String[]) articulos.get(i);
-            model.addRow(articulo);
-        }
-
-        // Asignar el modelo a la tabla
-        JtableArticulos.setModel(model);
-    } catch (FileNotFoundException e) {
-        JOptionPane.showMessageDialog(this, "El archivo de articulos no existe", "Error", JOptionPane.ERROR_MESSAGE);
-    } catch (IOException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al leer el archivo de articulos", "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
-
 
     private void mostrarFacturasEnTabla() {
         try {
@@ -2205,7 +2202,7 @@ public class Menu extends javax.swing.JFrame {
             return false;
         }
         return false;
-    
+
     }//GEN-LAST:event_BtGuardarArticuloActionPerformed
 
     private void BtBuscarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtBuscarArticuloActionPerformed
@@ -2230,6 +2227,7 @@ public class Menu extends javax.swing.JFrame {
                         JtProveedorArticulo.setText(proveedor);
 
                         JOptionPane.showMessageDialog(this, "Articulo encontrado", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
                         entrada.close();
                         return;
                     }
@@ -2245,11 +2243,11 @@ public class Menu extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Por favor ingrese un código de Articulos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    
+
     }//GEN-LAST:event_BtBuscarArticuloActionPerformed
 
     private void BtEditarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtEditarArticuloActionPerformed
-    String nombreArticulo = JtNombreArticulo.getText().trim();
+        String nombreArticulo = JtNombreArticulo.getText().trim();
 
         if (!nombreArticulo.isEmpty()) {
             DataInputStream entrada = null;
@@ -2280,6 +2278,12 @@ public class Menu extends javax.swing.JFrame {
                         articulo.setProveedor(JtProveedorArticulo.getText());
 
                         JOptionPane.showMessageDialog(this, "Articulo editado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                        JtNombreArticulo.setText("");
+                        JtDescripcionArticulo.setText("");
+                        JtCantidadArticulo.setText("");
+                        JtPrecioArticulo.setText("");
+                        JtProveedorArticulo.setText("");
                         break;
                     }
                 }
@@ -2315,7 +2319,7 @@ public class Menu extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Por favor ingrese un nombre de articulo", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    
+
     }//GEN-LAST:event_BtEditarArticuloActionPerformed
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
@@ -2466,87 +2470,93 @@ public class Menu extends javax.swing.JFrame {
 
         String nitCliente = JtNitFactura.getText();
 
-if (!existeCliente(nitCliente)) {
-    JOptionPane.showMessageDialog(this, "El cliente no existe", "Error", JOptionPane.ERROR_MESSAGE);
-    return;
-} else {
-    DataInputStream entradaClientes = null;
-    try {
-        entradaClientes = new DataInputStream(new FileInputStream("Clientes.bin"));
-        while (entradaClientes.available() > 0) {
-            String nit = entradaClientes.readUTF();
-            String nombre = entradaClientes.readUTF();
-            String direccion = entradaClientes.readUTF();
-
-            if (nit.equals(nitCliente)) {
-                JtNitFactura.setText(nit);
-                JtNombreFactura.setText(nombre);
-                JtDireccionFactura.setText(direccion);
-
-                entradaClientes.close();
-                break;
-            }
-        }
-    } catch (IOException ex) {
-        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    String nombreArticulo = JtNombreProducto.getText().trim();
-
-    if (!nombreArticulo.isEmpty()) {
-        DataInputStream entradaArticulos = null;
-        try {
-            entradaArticulos = new DataInputStream(new FileInputStream("Articulos.bin"));
-            while (entradaArticulos.available() > 0) {
-                String nombre = entradaArticulos.readUTF();
-                String descripcion = entradaArticulos.readUTF();
-                String cantidad = entradaArticulos.readUTF();
-                String precio = entradaArticulos.readUTF();
-                String proveedor = entradaArticulos.readUTF();
-
-                if (nombre.equals(nombreArticulo)) {
-                    int cantidadIngresada = Integer.parseInt(JtCantidadProducto.getText().trim());
-                    int cantidadDisponible = Integer.parseInt(cantidad);
-
-                    if (cantidadIngresada > cantidadDisponible) {
-                        JOptionPane.showMessageDialog(this, "La cantidad ingresada sobrepasa el inventario disponible", "Error", JOptionPane.ERROR_MESSAGE);
-                        entradaArticulos.close();
-                        return;
-                    }
-
-                    JtNombreProducto.setText(nombre);
-                    JtPrecioProducto.setText(precio);
-
-                    // Multiplicación de la cantidad ingresada y el precio
-                    double precioProducto = Double.parseDouble(precio);
-                    double total = cantidadIngresada * precioProducto;
-                    JtTotalProducto.setText(String.valueOf(total));
-                    
-                    // Generar un nuevo UUID
-        UUID newUuid = UUID.randomUUID();
-        mostrarUsuarioActivo();
-
-        // Supongamos que JtNoFactura es un JTextField
-        JtNoFactura.setText(newUuid.toString());
-
-                    entradaArticulos.close();
-                    return;
-                }
-            }
-            JOptionPane.showMessageDialog(this, "Articulo no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException ex) {
-            Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
+        if (!existeCliente(nitCliente)) {
+            JOptionPane.showMessageDialog(this, "El cliente no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        } else {
+            DataInputStream entradaClientes = null;
             try {
-                if (entradaArticulos != null) {
-                    entradaArticulos.close();
+                entradaClientes = new DataInputStream(new FileInputStream("Clientes.bin"));
+                while (entradaClientes.available() > 0) {
+                    String nit = entradaClientes.readUTF();
+                    String nombre = entradaClientes.readUTF();
+                    String direccion = entradaClientes.readUTF();
+
+                    if (nit.equals(nitCliente)) {
+                        JtNitFactura.setText(nit);
+                        JtNombreFactura.setText(nombre);
+                        JtDireccionFactura.setText(direccion);
+
+                        entradaClientes.close();
+                        break;
+                    }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+            String nombreArticulo = JtNombreProducto.getText().trim();
+
+            if (!nombreArticulo.isEmpty()) {
+                DataInputStream entradaArticulos = null;
+                try {
+                    entradaArticulos = new DataInputStream(new FileInputStream("Articulos.bin"));
+                    while (entradaArticulos.available() > 0) {
+                        String nombre = entradaArticulos.readUTF();
+                        String descripcion = entradaArticulos.readUTF();
+                        String cantidad = entradaArticulos.readUTF();
+                        String precio = entradaArticulos.readUTF();
+                        String proveedor = entradaArticulos.readUTF();
+
+                        if (nombre.equals(nombreArticulo)) {
+                            int cantidadIngresada = Integer.parseInt(JtCantidadProducto.getText().trim());
+                            int cantidadDisponible = Integer.parseInt(cantidad);
+
+                            if (cantidadIngresada > cantidadDisponible) {
+                                JOptionPane.showMessageDialog(this, "La cantidad ingresada sobrepasa el inventario disponible", "Error", JOptionPane.ERROR_MESSAGE);
+                                entradaArticulos.close();
+                                return;
+                            }
+
+                            JtNombreProducto.setText(nombre);
+                            JtPrecioProducto.setText(precio);
+
+                            JtNombreArticulo.setText(nombre);
+                            JtDescripcionArticulo.setText(descripcion);
+                            JtPrecioArticulo.setText(precio);
+                            JtCantidadArticulo.setText(cantidad);
+                            JtProveedorArticulo.setText(proveedor);
+
+                            // Multiplicación de la cantidad ingresada y el precio
+                            double precioProducto = Double.parseDouble(precio);
+                            double total = cantidadIngresada * precioProducto;
+                            JtTotalProducto.setText(String.valueOf(total));
+
+                            // Generar un nuevo UUID
+                            UUID newUuid = UUID.randomUUID();
+                            mostrarUsuarioActivo();
+
+                            // Supongamos que JtNoFactura es un JTextField
+                            JtNoFactura.setText(newUuid.toString());
+
+                            entradaArticulos.close();
+                            return;
+                        }
+                    }
+                    JOptionPane.showMessageDialog(this, "Articulo no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException ex) {
+                    Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    try {
+                        if (entradaArticulos != null) {
+                            entradaArticulos.close();
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(Menu.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
         }
-    }
-}
     }//GEN-LAST:event_jButton27ActionPerformed
 
     private void JtNitFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JtNitFacturaActionPerformed
@@ -2636,111 +2646,186 @@ if (!existeCliente(nitCliente)) {
 
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
         try {
-            ArrayList<Factura> facturas = new ArrayList<>();
-            try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
-                while (entrada.available() > 0) {
-                    String noFactura = entrada.readUTF();
-                    String nit = entrada.readUTF();
-                    String nombre = entrada.readUTF();
-                    String direccion = entrada.readUTF();
-                    String producto = entrada.readUTF();
-                    int cantidad = entrada.readInt();
-                    float precio = entrada.readFloat();
-                    float total = entrada.readFloat();
-                    String usuario = entrada.readUTF();
+        ArrayList<Factura> facturas = new ArrayList<>();
+        try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
+            while (entrada.available() > 0) {
+                String noFactura = entrada.readUTF();
+                String nit = entrada.readUTF();
+                String nombre = entrada.readUTF();
+                String direccion = entrada.readUTF();
+                String producto = entrada.readUTF();
+                int cantidad = entrada.readInt();
+                float precio = entrada.readFloat();
+                float total = entrada.readFloat();
+                String usuario = entrada.readUTF(); // Esta es la línea que debes agregar
 
-                    facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario));
-                }
+                facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario));
             }
-
-            String noFacturaAnular = JtNoFactura.getText();
-            Factura facturaAnular = null;
-            for (Factura factura : facturas) {
-                if (factura.getNoFactura().equals(noFacturaAnular)) {
-                    facturaAnular = factura;
-                    break;
-                }
-            }
-
-            if (facturaAnular != null) {
-                facturas.remove(facturaAnular);
-
-                try (DataOutputStream salida = new DataOutputStream(new FileOutputStream("Facturas.bin"))) {
-                    for (Factura factura : facturas) {
-                        salida.writeUTF(factura.getNoFactura());
-                        salida.writeUTF(factura.getNit());
-                        salida.writeUTF(factura.getNombre());
-                        salida.writeUTF(factura.getDireccion());
-                        salida.writeUTF(factura.getProducto());
-                        salida.writeInt(factura.getCantidad());
-                        salida.writeFloat(factura.getPrecio());
-                        salida.writeFloat(factura.getTotal());
-                    }
-                }
-
-                mostrarFacturasEnTabla();
-
-                JtNoFactura.setText("");
-
-                JOptionPane.showMessageDialog(this, "Factura anulada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "No se encontró la factura", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al anular la factura", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
+        String noFacturaAnular = JtNoFactura.getText();
+        Factura facturaAnular = null;
+        for (Factura factura : facturas) {
+            if (factura.getNoFactura().equals(noFacturaAnular)) {
+                facturaAnular = factura;
+                break;
+            }
+        }
+
+        if (facturaAnular != null) {
+            facturas.remove(facturaAnular);
+
+            try (DataOutputStream salida = new DataOutputStream(new FileOutputStream("Facturas.bin"))) {
+                for (Factura factura : facturas) {
+                    salida.writeUTF(factura.getNoFactura());
+                    salida.writeUTF(factura.getNit());
+                    salida.writeUTF(factura.getNombre());
+                    salida.writeUTF(factura.getDireccion());
+                    salida.writeUTF(factura.getProducto());
+                    salida.writeInt(factura.getCantidad());
+                    salida.writeFloat(factura.getPrecio());
+                    salida.writeFloat(factura.getTotal());
+                    salida.writeUTF(factura.getUsuario()); // Asegúrate de que también estás escribiendo la información del usuario aquí
+                }
+            }
+
+            mostrarFacturasEnTabla();
+
+            JtNoFactura.setText("");
+
+            JOptionPane.showMessageDialog(this, "Factura anulada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontró la factura", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (IOException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error al anular la factura", "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_jButton28ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-try {
-    File file = new File("Facturas.bin");
-    if (!file.exists()) {
-        file.createNewFile();
-    }
-    FileOutputStream archivo = new FileOutputStream(file, true); // true para modo de apertura para agregar al final
-    DataOutputStream escritura = new DataOutputStream(archivo);
+        try {
+            File file = new File("Facturas.bin");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileOutputStream archivo = new FileOutputStream(file, true); // true para modo de apertura para agregar al final
+            DataOutputStream escritura = new DataOutputStream(archivo);
 
-    Factura factura = new Factura();
-    factura.setNoFactura(JtNoFactura.getText());
-    factura.setNit(JtNitFactura.getText());
-    factura.setNombre(JtNombreFactura.getText());
-    factura.setDireccion(JtDireccionFactura.getText());
-    factura.setProducto(JtNombreProducto.getText());
-    factura.setCantidad(Integer.parseInt(JtCantidadProducto.getText()));
-    factura.setPrecio(Float.parseFloat(JtPrecioProducto.getText()));
-    factura.setTotal(Float.parseFloat(JtTotalProducto.getText()));
-    factura.setUsuario(JUser.getText());
+            Factura factura = new Factura();
+            factura.setNoFactura(JtNoFactura.getText());
+            factura.setNit(JtNitFactura.getText());
+            factura.setNombre(JtNombreFactura.getText());
+            factura.setDireccion(JtDireccionFactura.getText());
+            factura.setProducto(JtNombreProducto.getText());
+            factura.setCantidad(Integer.parseInt(JtCantidadProducto.getText()));
+            factura.setPrecio(Float.parseFloat(JtPrecioProducto.getText()));
+            factura.setTotal(Float.parseFloat(JtTotalProducto.getText()));
+            factura.setUsuario(JUser.getText());
 
-    escritura.writeUTF(factura.getNoFactura());
-    escritura.writeUTF(factura.getNit());
-    escritura.writeUTF(factura.getNombre());
-    escritura.writeUTF(factura.getDireccion());
-    escritura.writeUTF(factura.getProducto());
-    escritura.writeInt(factura.getCantidad());
-    escritura.writeFloat(factura.getPrecio());
-    escritura.writeFloat(factura.getTotal());
-    escritura.writeUTF(factura.getUsuario());
+            escritura.writeUTF(factura.getNoFactura());
+            escritura.writeUTF(factura.getNit());
+            escritura.writeUTF(factura.getNombre());
+            escritura.writeUTF(factura.getDireccion());
+            escritura.writeUTF(factura.getProducto());
+            escritura.writeInt(factura.getCantidad());
+            escritura.writeFloat(factura.getPrecio());
+            escritura.writeFloat(factura.getTotal());
+            escritura.writeUTF(factura.getUsuario());
 
-    escritura.close();
+            escritura.close();
 
-    mostrarFacturasEnTabla();
+            mostrarFacturasEnTabla();
 
-    JtNoFactura.setText("");
-    JtNitFactura.setText("");
-    JtNombreFactura.setText("");
-    JtDireccionFactura.setText("");
-    JtNombreProducto.setText("");
-    JtCantidadProducto.setText("");
-    JtPrecioProducto.setText("");
-    JtTotalProducto.setText("");
+            String nombreArticulo = JtNombreProducto.getText().trim();
 
-    JOptionPane.showMessageDialog(this, "Agregado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-} catch (IOException ex) {
-    ex.printStackTrace();
-    JOptionPane.showMessageDialog(this, "Error al guardar la factura", "Error", JOptionPane.ERROR_MESSAGE);
-}
+            if (!nombreArticulo.isEmpty()) {
+                DataInputStream entrada = null;
+                DataOutputStream salida = null;
+                try {
+                    // Leer todos los articulos
+                    List<Articulo> articulos = new ArrayList<>();
+                    entrada = new DataInputStream(new FileInputStream("Articulos.bin"));
+
+                    while (entrada.available() > 0) {
+                        Articulo articulo = new Articulo();
+                        articulo.setNombre(entrada.readUTF());
+                        articulo.setDescripcion(entrada.readUTF());
+                        articulo.setCantidad(Integer.parseInt(entrada.readUTF()));
+                        articulo.setPrecio(Float.parseFloat(entrada.readUTF()));
+                        articulo.setProveedor(entrada.readUTF());
+
+                        articulos.add(articulo);
+                    }
+
+                    // Buscar el articulo para editar
+                    for (Articulo articulo : articulos) {
+                        if (articulo.getNombre().equals(factura.getProducto())) {                            // Editar los detalles del articulo
+                            articulo.setDescripcion(JtDescripcionArticulo.getText());
+                            int cantidadArticulo = Integer.parseInt(JtCantidadArticulo.getText());
+                            int nuevaCantidad = cantidadArticulo - factura.getCantidad();
+                            articulo.setCantidad(nuevaCantidad);
+                            articulo.setPrecio(Float.parseFloat(JtPrecioArticulo.getText()));
+                            articulo.setProveedor(JtProveedorArticulo.getText());
+
+                            JtNombreArticulo.setText("");
+                            JtDescripcionArticulo.setText("");
+                            JtCantidadArticulo.setText("");
+                            JtPrecioArticulo.setText("");
+                            JtProveedorArticulo.setText("");
+
+                            break;
+                        }
+                    }
+
+                    // Reescribir todos los articulos en el archivo
+                    salida = new DataOutputStream(new FileOutputStream("Articulos.bin"));
+
+                    for (Articulo articulo : articulos) {
+                        salida.writeUTF(articulo.getNombre());
+                        salida.writeUTF(articulo.getDescripcion());
+                        salida.writeUTF(String.valueOf(articulo.getCantidad()));
+                        salida.writeUTF(String.valueOf(articulo.getPrecio()));
+                        salida.writeUTF(articulo.getProveedor());
+                    }
+
+                    mostarArticulosEnTabla();
+                } catch (FileNotFoundException e) {
+                    JOptionPane.showMessageDialog(this, "El archivo de articulos no existe", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this, "Error al leer o escribir el archivo de articulos", "Error", JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    try {
+                        if (entrada != null) {
+                            entrada.close();
+                        }
+                        if (salida != null) {
+                            salida.close();
+                        }
+                    } catch (IOException e) {
+                        JOptionPane.showMessageDialog(this, "Error al cerrar el archivo de articulos", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Por favor ingrese un nombre de articulo", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            mostarArticulosEnTabla();
+
+            JtNoFactura.setText("");
+            JtNitFactura.setText("");
+            JtNombreFactura.setText("");
+            JtDireccionFactura.setText("");
+            JtNombreProducto.setText("");
+            JtCantidadProducto.setText("");
+            JtPrecioProducto.setText("");
+            JtTotalProducto.setText("");
+
+            JOptionPane.showMessageDialog(this, "Agregado con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al guardar la factura", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
@@ -2789,33 +2874,34 @@ try {
     }//GEN-LAST:event_jButton18ActionPerformed
 
     private void mostrarUsuarioActivo() {
-    File archivo = new File("UsuarioActivo.bin");
-    if (archivo.exists()) {
-        DataInputStream entrada = null;
-        try {
-            entrada = new DataInputStream(new FileInputStream(archivo));
-            String nombreUsuario = entrada.readUTF();
-            JUser.setText(nombreUsuario);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
+        File archivo = new File("UsuarioActivo.bin");
+        if (archivo.exists()) {
+            DataInputStream entrada = null;
             try {
-                if (entrada != null) {
-                    entrada.close();
-                }
+                entrada = new DataInputStream(new FileInputStream(archivo));
+                String nombreUsuario = entrada.readUTF();
+                JUser.setText(nombreUsuario);
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (entrada != null) {
+                        entrada.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
-}
-    
+
     private void eliminarUsuarioActivo() {
         File archivo = new File("UsuarioActivo.bin");
         if (archivo.exists()) {
             archivo.delete();
         }
     }
+
     /**
      * @param args the command line arguments
      */
