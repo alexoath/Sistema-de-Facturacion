@@ -14,6 +14,8 @@ public class Articulo {
     private Integer Cantidad;
     private Float precio;
     private String Proveedor;
+  
+    
 
     public String getNombre() {
         return Nombre;

@@ -2645,62 +2645,140 @@ public class Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_JtTotalProductoActionPerformed
 
     private void jButton28ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton28ActionPerformed
-        try {
-        ArrayList<Factura> facturas = new ArrayList<>();
-        try (DataInputStream entrada = new DataInputStream(new FileInputStream("Facturas.bin"))) {
-            while (entrada.available() > 0) {
-                String noFactura = entrada.readUTF();
-                String nit = entrada.readUTF();
-                String nombre = entrada.readUTF();
-                String direccion = entrada.readUTF();
-                String producto = entrada.readUTF();
-                int cantidad = entrada.readInt();
-                float precio = entrada.readFloat();
-                float total = entrada.readFloat();
-                String usuario = entrada.readUTF(); // Esta es la línea que debes agregar
+try {
+    String noFacturaAnular = JtNoFactura.getText().trim();
 
-                facturas.add(new Factura(noFactura, nit, nombre, direccion, producto, cantidad, precio, total, usuario));
-            }
-        }
-
-        String noFacturaAnular = JtNoFactura.getText();
+    if (!noFacturaAnular.isEmpty()) {
+        // Leer la factura que se va a anular
         Factura facturaAnular = null;
-        for (Factura factura : facturas) {
+        List<Factura> facturas = new ArrayList<>();
+        DataInputStream entradaFacturas = new DataInputStream(new FileInputStream("Facturas.bin"));
+
+        while (entradaFacturas.available() > 0) {
+            Factura factura = new Factura();
+            factura.setNoFactura(entradaFacturas.readUTF());
+            factura.setNit(entradaFacturas.readUTF());
+            factura.setNombre(entradaFacturas.readUTF());
+            factura.setDireccion(entradaFacturas.readUTF());
+            factura.setProducto(entradaFacturas.readUTF());
+            factura.setCantidad(entradaFacturas.readInt());
+            factura.setPrecio(entradaFacturas.readFloat());
+            factura.setTotal(entradaFacturas.readFloat());
+            factura.setUsuario(entradaFacturas.readUTF());
+
+            facturas.add(factura);
+
             if (factura.getNoFactura().equals(noFacturaAnular)) {
                 facturaAnular = factura;
-                break;
             }
         }
 
-        if (facturaAnular != null) {
-            facturas.remove(facturaAnular);
+        entradaFacturas.close();
 
-            try (DataOutputStream salida = new DataOutputStream(new FileOutputStream("Facturas.bin"))) {
-                for (Factura factura : facturas) {
-                    salida.writeUTF(factura.getNoFactura());
-                    salida.writeUTF(factura.getNit());
-                    salida.writeUTF(factura.getNombre());
-                    salida.writeUTF(factura.getDireccion());
-                    salida.writeUTF(factura.getProducto());
-                    salida.writeInt(factura.getCantidad());
-                    salida.writeFloat(factura.getPrecio());
-                    salida.writeFloat(factura.getTotal());
-                    salida.writeUTF(factura.getUsuario()); // Asegúrate de que también estás escribiendo la información del usuario aquí
+        if (facturaAnular != null) {
+            DataInputStream entrada = null;
+            DataOutputStream salida = null;
+            try {
+                // Leer todos los articulos
+                List<Articulo> articulos = new ArrayList<>();
+                entrada = new DataInputStream(new FileInputStream("Articulos.bin"));
+
+                while (entrada.available() > 0) {
+                    Articulo articulo = new Articulo();
+                    articulo.setNombre(entrada.readUTF());
+                    articulo.setDescripcion(entrada.readUTF());
+                    articulo.setCantidad(Integer.parseInt(entrada.readUTF()));
+                    articulo.setPrecio(Float.parseFloat(entrada.readUTF()));
+                    articulo.setProveedor(entrada.readUTF());
+
+                    articulos.add(articulo);
+                }
+
+                // Buscar el articulo para editar
+                for (Articulo articulo : articulos) {
+                    if (articulo.getNombre().equals(facturaAnular.getProducto())) {
+                        // Mostrar los datos en los campos
+                        JtNombreArticulo.setText(articulo.getNombre());
+                        JtDescripcionArticulo.setText(articulo.getDescripcion());
+                        JtCantidadArticulo.setText(String.valueOf(articulo.getCantidad()));
+                        JtPrecioArticulo.setText(String.valueOf(articulo.getPrecio()));
+                        JtProveedorArticulo.setText(articulo.getProveedor());
+
+                        // Sumar la cantidad de la factura al articulo
+                        int nuevaCantidad = articulo.getCantidad() + facturaAnular.getCantidad();
+                        articulo.setCantidad(nuevaCantidad);
+
+                        break;
+                    }
+                }
+
+                // Reescribir todos los articulos en el archivo
+                salida = new DataOutputStream(new FileOutputStream("Articulos.bin"));
+
+                for (Articulo articulo : articulos) {
+                    salida.writeUTF(articulo.getNombre());
+                    salida.writeUTF(articulo.getDescripcion());
+                    salida.writeUTF(String.valueOf(articulo.getCantidad()));
+                    salida.writeUTF(String.valueOf(articulo.getPrecio()));
+                    salida.writeUTF(articulo.getProveedor());
+                }
+
+                mostarArticulosEnTabla();
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(this, "El archivo de articulos no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al leer o escribir el archivo de articulos", "Error", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                try {
+                    if (entrada != null) {
+                        entrada.close();
+                    }
+                    if (salida != null) {
+                        salida.close();
+                    }
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this, "Error al cerrar el archivo de articulos", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
 
-            mostrarFacturasEnTabla();
+            // Eliminar la factura que se va a anular
+            facturas.removeIf(factura -> factura.getNoFactura().equals(noFacturaAnular));
 
-            JtNoFactura.setText("");
+            // Reescribir todas las facturas restantes en el archivo
+            DataOutputStream salidaFacturas = new DataOutputStream(new FileOutputStream("Facturas.bin"));
 
-            JOptionPane.showMessageDialog(this, "Factura anulada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            for (Factura factura : facturas) {
+                salidaFacturas.writeUTF(factura.getNoFactura());
+                salidaFacturas.writeUTF(factura.getNit());
+                salidaFacturas.writeUTF(factura.getNombre());
+                salidaFacturas.writeUTF(factura.getDireccion());
+                salidaFacturas.writeUTF(factura.getProducto());
+                salidaFacturas.writeInt(factura.getCantidad());
+                salidaFacturas.writeFloat(factura.getPrecio());
+                salidaFacturas.writeFloat(factura.getTotal());
+                salidaFacturas.writeUTF(factura.getUsuario());
+            }
+mostrarFacturasEnTabla();
+
+                    JtNoFactura.setText("");
+                    JtNombreArticulo.setText("");
+                    JtDescripcionArticulo.setText("");
+                    JtCantidadArticulo.setText("");
+                    JtPrecioArticulo.setText("");
+                    JtProveedorArticulo.setText("");
+
+                    JOptionPane.showMessageDialog(null, "Factura Anulada Correctamente");
+            salidaFacturas.close();
         } else {
-            JOptionPane.showMessageDialog(this, "No se encontró la factura", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "La factura no existe", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    } catch (IOException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al anular la factura", "Error", JOptionPane.ERROR_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(this, "Por favor ingrese un número de factura", "Error", JOptionPane.ERROR_MESSAGE);
     }
+} catch (IOException ex) {
+    ex.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Error al anular la factura", "Error", JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_jButton28ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
